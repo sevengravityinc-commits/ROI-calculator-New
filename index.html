@@ -182,6 +182,11 @@
                 <p class="text-lg sm:text-xl text-slate-100 max-w-3xl mx-auto leading-relaxed">
                     See exactly how partnering with Seven Gravity transforms your cold email outreach into predictable, profitable growth
                 </p>
+                
+                <!-- DEBUG TEST BUTTON -->
+                <button onclick="alert('Button click works!'); togglePopover('techFeeInfo');" style="background: red; color: white; padding: 10px; margin-top: 20px; border-radius: 5px;">
+                    TEST: Click to toggle first popup
+                </button>
             </div>
 
             <!-- Main Calculator Card -->
@@ -490,6 +495,7 @@
 
         // Calculate and update results
         function calculate() {
+            console.log('Calculate function called');
             // Get values
             const emailVolume = parseInt(emailVolumeInput.value);
             const emailsPerContact = parseInt(emailsPerContactInput.value);
@@ -499,6 +505,8 @@
             const positiveReplyRate = parseFloat(positiveReplyRateInput.value) / 100;
             const callBookingRate = parseInt(callBookingRateInput.value) / 100;
             const closeRate = parseInt(closeRateInput.value) / 100;
+
+            console.log('Values:', {emailVolume, emailsPerContact, costPerCall, avgSalePrice, replyRate, positiveReplyRate, callBookingRate, closeRate});
 
             // Calculate funnel
             const totalContacts = Math.floor(emailVolume / emailsPerContact);
