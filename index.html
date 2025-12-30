@@ -152,10 +152,10 @@
                                 Monthly Email Volume
                             </label>
                             <select id="emailVolume" class="w-full bg-slate-900/80 border-2 border-slate-700 rounded-xl px-4 py-3.5 text-slate-100 text-base font-semibold focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-200 cursor-pointer hover:border-slate-600">
-                                <option value="25000">25,000 emails/month</option>
-                                <option value="50000">50,000 emails/month</option>
-                                <option value="75000">75,000 emails/month</option>
-                                <option value="100000">100,000 emails/month</option>
+                                <option value="25000">25,000 emails/month (Tech Fee: $500)</option>
+                                <option value="50000">50,000 emails/month (Tech Fee: $1,000)</option>
+                                <option value="75000">75,000 emails/month (Tech Fee: $1,500)</option>
+                                <option value="100000">100,000 emails/month (Tech Fee: $2,000)</option>
                             </select>
                             <p class="text-xs text-slate-400 italic">
                                 Tech Fee: <span id="techFeeDisplay">$500</span> (includes infrastructure setup)
@@ -349,9 +349,9 @@
         // Tech fee mapping
         const techFees = {
             25000: 500,
-            50000: 500,
-            75000: 750,
-            100000: 1000
+            50000: 1000,
+            75000: 1500,
+            100000: 2000
         };
 
         // Get all inputs
