@@ -184,8 +184,8 @@
                 </p>
                 
                 <!-- DEBUG TEST BUTTON -->
-                <button onclick="alert('Button click works!'); togglePopover('techFeeInfo');" style="background: red; color: white; padding: 10px; margin-top: 20px; border-radius: 5px;">
-                    TEST: Click to toggle first popup
+                <button onclick="alert('Button click works!'); showInfoBox('techFeeInfo');" style="background: red; color: white; padding: 10px; margin-top: 20px; border-radius: 5px;">
+                    TEST: Click to toggle first info box
                 </button>
             </div>
 
@@ -212,7 +212,7 @@
                         <div class="space-y-3">
                             <label class="block text-sm font-semibold text-slate-200 flex items-center gap-2">
                                 Select Tech Fee Package
-                                <button type="button" onclick="togglePopover('techFeeInfo')" class="info-icon">ⓘ</button>
+                                <button type="button" onclick="showInfoBox('techFeeInfo')" class="info-icon">ⓘ</button>
                             </label>
                             <select id="emailVolume" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-semibold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200 cursor-pointer hover:border-slate-600">
                                 <option value="25000">25,000 emails/month (Tech Fee: $500)</option>
@@ -229,7 +229,7 @@
                         <div class="space-y-3">
                             <label class="block text-sm font-semibold text-slate-200 flex items-center gap-2">
                                 Emails Sent Per Contact
-                                <button type="button" onclick="togglePopover('emailsPerContactInfo')" class="info-icon">ⓘ</button>
+                                <button type="button" onclick="showInfoBox('emailsPerContactInfo')" class="info-icon">ⓘ</button>
                             </label>
                             <input type="number" id="emailsPerContact" min="1" max="5" value="2" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-bold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200">
                             <div id="emailsPerContactInfo" class="info-popup">
@@ -241,7 +241,7 @@
                         <div class="space-y-3">
                             <label class="block text-sm font-semibold text-slate-200 flex items-center gap-2">
                                 Cost Per Booked Call
-                                <button type="button" onclick="togglePopover('costPerCallInfo')" class="info-icon">ⓘ</button>
+                                <button type="button" onclick="showInfoBox('costPerCallInfo')" class="info-icon">ⓘ</button>
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-200 font-bold text-base">$</span>
@@ -256,7 +256,7 @@
                         <div class="space-y-3">
                             <label class="block text-sm font-semibold text-slate-200 flex items-center gap-2">
                                 Average Sale Price
-                                <button type="button" onclick="togglePopover('avgSalePriceInfo')" class="info-icon">ⓘ</button>
+                                <button type="button" onclick="showInfoBox('avgSalePriceInfo')" class="info-icon">ⓘ</button>
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-200 font-bold text-base">$</span>
@@ -290,7 +290,7 @@
                             <div class="flex justify-between items-center">
                                 <label class="text-sm font-semibold text-slate-200 flex items-center gap-2">
                                     Reply Rate
-                                    <button type="button" onclick="togglePopover('replyRateInfo')" class="info-icon">ⓘ</button>
+                                    <button type="button" onclick="showInfoBox('replyRateInfo')" class="info-icon">ⓘ</button>
                                 </label>
                                 <span class="text-xl font-bold text-turquoise-400" id="replyRateValue">2.0%</span>
                             </div>
@@ -310,7 +310,7 @@
                             <div class="flex justify-between items-center">
                                 <label class="text-sm font-semibold text-slate-200 flex items-center gap-2">
                                     Positive Reply Rate
-                                    <button type="button" onclick="togglePopover('positiveReplyRateInfo')" class="info-icon">ⓘ</button>
+                                    <button type="button" onclick="showInfoBox('positiveReplyRateInfo')" class="info-icon">ⓘ</button>
                                 </label>
                                 <span class="text-xl font-bold text-emerald-400" id="positiveReplyRateValue">12.5%</span>
                             </div>
@@ -330,7 +330,7 @@
                             <div class="flex justify-between items-center">
                                 <label class="text-sm font-semibold text-slate-200 flex items-center gap-2">
                                     Call Booking Rate
-                                    <button type="button" onclick="togglePopover('callBookingRateInfo')" class="info-icon">ⓘ</button>
+                                    <button type="button" onclick="showInfoBox('callBookingRateInfo')" class="info-icon">ⓘ</button>
                                 </label>
                                 <span class="text-xl font-bold text-turquoise-400" id="callBookingRateValue">25%</span>
                             </div>
@@ -350,7 +350,7 @@
                             <div class="flex justify-between items-center">
                                 <label class="text-sm font-semibold text-slate-200 flex items-center gap-2">
                                     Close Rate
-                                    <button type="button" onclick="togglePopover('closeRateInfo')" class="info-icon">ⓘ</button>
+                                    <button type="button" onclick="showInfoBox('closeRateInfo')" class="info-icon">ⓘ</button>
                                 </label>
                                 <span class="text-xl font-bold text-emerald-400" id="closeRateValue">25%</span>
                             </div>
@@ -533,14 +533,16 @@
             document.getElementById('closeRateValue').textContent = Math.round(closeRate * 100) + '%';
 
             // Update funnel steps
-            document.getElementById('funnelSteps').innerHTML = `
+            try {
+                console.log('Updating funnel steps...');
+                const funnelHTML = `
                 <!-- Total Contacts -->
                 <div class="bg-slate-800/70 border-2 border-slate-600 rounded-xl p-5 hover:border-turquoise-500/50 transition-all duration-300">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="text-sm font-semibold text-white uppercase tracking-wide">Total Contacts Reached</h3>
                         <div class="text-3xl font-black text-white font-extrabold">${formatNumber(totalContacts)}</div>
                     </div>
-                    <p class="text-xs text-slate-300 italic">
+                    <p class="text-xs text-slate-100 italic">
                         = ${formatNumber(emailVolume)} emails ÷ ${emailsPerContact} emails per contact
                     </p>
                 </div>
@@ -613,6 +615,12 @@
                     </p>
                 </div>
             `;
+            
+            document.getElementById('funnelSteps').innerHTML = funnelHTML;
+            console.log('Funnel steps updated successfully');
+            } catch(e) {
+                console.error('Error updating funnel:', e);
+            }
 
             // Update financial metrics
             document.getElementById('financialMetrics').innerHTML = `
@@ -720,7 +728,7 @@
     <!-- Popover Script - Separate for clarity -->
     <script>
         // Ultra-simple popover toggle
-        function togglePopover(id) {
+        function showInfoBox(id) {
             // Get the popover
             var popover = document.getElementById(id);
             
