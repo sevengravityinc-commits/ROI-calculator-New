@@ -203,37 +203,36 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 ml-0 md:ml-14">
                         
-                        <!-- Email Volume -->
+                        <!-- Pricing Model -->
                         <div class="space-y-3">
                             <label class="block text-sm font-semibold text-slate-200 flex items-center gap-2">
-                                Select Tech Fee Package
-                                <button type="button" onclick="showInfoBox('techFeeInfo')" class="info-icon">ⓘ</button>
+                                Select Pricing Model
+                                <button type="button" onclick="showInfoBox('pricingModelInfo')" class="info-icon">ⓘ</button>
                             </label>
-                            <select id="emailVolume" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-semibold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200 cursor-pointer hover:border-slate-600">
-                                <option value="25000">25,000 emails/month (Tech Fee: $1,000)</option>
-                                <option value="50000">50,000 emails/month (Tech Fee: $2,000)</option>
-                                <option value="75000">75,000 emails/month (Tech Fee: $3,000)</option>
-                                <option value="100000">100,000 emails/month (Tech Fee: $4,000)</option>
+                            <select id="pricingModel" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-semibold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200 cursor-pointer hover:border-slate-600">
+                                <option value="performance">Performance-Based (Tech fee + cost per call)</option>
+                                <option value="pay_per_lead">Pay Per Lead (No tech fee, just cost per call)</option>
                             </select>
-                            <div id="techFeeInfo" class="info-popup">
-                                Tech fees cover all infrastructure needed for your cold email campaign including domain configuration, email account setup, warmup sequences, and deliverability optimization. The fee scales with volume to ensure optimal performance and sender reputation.
+                            <div id="pricingModelInfo" class="info-popup">
+                                <strong>Performance-Based:</strong> Pay a $1,000 monthly tech fee plus your chosen cost per booked call. Best for higher volume campaigns.<br><br>
+                                <strong>Pay Per Lead:</strong> No monthly tech fee. Just pay your chosen cost per booked call (default $500). Simple pricing with no upfront costs.
                             </div>
                         </div>
 
-                        <!-- Emails Per Contact -->
+                        <!-- Total Contacts -->
                         <div class="space-y-3">
                             <label class="block text-sm font-semibold text-slate-200 flex items-center gap-2">
-                                Emails Sent Per Contact
-                                <button type="button" onclick="showInfoBox('emailsPerContactInfo')" class="info-icon">ⓘ</button>
+                                Total Contacts to Reach
+                                <button type="button" onclick="showInfoBox('totalContactsInfo')" class="info-icon">ⓘ</button>
                             </label>
-                            <input type="number" id="emailsPerContact" min="1" max="5" value="3" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-bold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200">
-                            <div id="emailsPerContactInfo" class="info-popup">
-                                This is the total number of emails each contact receives in your sequence (initial email + follow-ups). For example, if set to 3, each prospect gets an initial outreach plus 2 follow-up emails over time.
+                            <input type="number" id="totalContacts" min="1000" max="100000" step="1000" value="10000" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-bold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200">
+                            <div id="totalContactsInfo" class="info-popup">
+                                The total number of unique contacts you plan to reach with your campaign. This is the starting point of your sales funnel.
                             </div>
                         </div>
 
                         <!-- Cost Per Call -->
-                        <div class="space-y-3">
+                        <div class="space-y-3" id="costPerCallContainer">
                             <label class="block text-sm font-semibold text-slate-200 flex items-center gap-2">
                                 Cost Per Booked Call
                                 <button type="button" onclick="showInfoBox('costPerCallInfo')" class="info-icon">ⓘ</button>
@@ -243,7 +242,7 @@
                                 <input type="number" id="costPerCall" min="100" max="1000" step="50" value="300" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl pl-9 pr-4 py-3.5 text-slate-100 text-base font-bold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200">
                             </div>
                             <div id="costPerCallInfo" class="info-popup">
-                                This is what you pay Seven Gravity for each qualified sales call that gets booked from your campaign. You only pay when someone meeting your ICP criteria agrees to a call. No retainers, no upfront fees—just results.
+                                This is what you pay Seven Gravity for each qualified sales call that gets booked from your campaign. You only pay when someone meeting your ICP criteria agrees to a call.
                             </div>
                         </div>
 
@@ -327,9 +326,9 @@
                                     Call Booking Rate
                                     <button type="button" onclick="showInfoBox('callBookingRateInfo')" class="info-icon">ⓘ</button>
                                 </label>
-                                <span class="text-xl font-bold text-turquoise-400" id="callBookingRateValue">25%</span>
+                                <span class="text-xl font-bold text-turquoise-400" id="callBookingRateValue">30%</span>
                             </div>
-                            <input type="range" id="callBookingRate" min="10" max="50" step="1" value="25" class="w-full h-3 bg-slate-700 rounded-lg slider-turquoise">
+                            <input type="range" id="callBookingRate" min="10" max="50" step="1" value="30" class="w-full h-3 bg-slate-700 rounded-lg slider-turquoise">
                             <div class="flex justify-between text-xs text-slate-300">
                                 <span>10%</span>
                                 <span>30%</span>
@@ -419,23 +418,30 @@
     </div>
 
     <script>
-        // Tech fee mapping - UPDATED PRICING
-        const techFees = {
-            25000: 1000,
-            50000: 2000,
-            75000: 3000,
-            100000: 4000
-        };
+        // Pricing constants
+        const TECH_FEE = 1000;
+        const DEFAULT_COST_PERFORMANCE = 300;
+        const DEFAULT_COST_PAY_PER_LEAD = 500;
 
         // Get all inputs
-        const emailVolumeInput = document.getElementById('emailVolume');
-        const emailsPerContactInput = document.getElementById('emailsPerContact');
+        const pricingModelInput = document.getElementById('pricingModel');
+        const totalContactsInput = document.getElementById('totalContacts');
         const costPerCallInput = document.getElementById('costPerCall');
         const avgSalePriceInput = document.getElementById('avgSalePrice');
         const replyRateInput = document.getElementById('replyRate');
         const positiveReplyRateInput = document.getElementById('positiveReplyRate');
         const callBookingRateInput = document.getElementById('callBookingRate');
         const closeRateInput = document.getElementById('closeRate');
+
+        // Update cost per call default when pricing model changes
+        function updateCostPerCallDefault() {
+            const pricingModel = pricingModelInput.value;
+            if (pricingModel === 'pay_per_lead') {
+                costPerCallInput.value = DEFAULT_COST_PAY_PER_LEAD;
+            } else {
+                costPerCallInput.value = DEFAULT_COST_PERFORMANCE;
+            }
+        }
 
         // Format currency
         function formatCurrency(value) {
@@ -491,8 +497,8 @@
         // Calculate and update results
         function calculate() {
             // Get values
-            const emailVolume = parseInt(emailVolumeInput.value);
-            const emailsPerContact = parseInt(emailsPerContactInput.value);
+            const pricingModel = pricingModelInput.value;
+            const totalContacts = parseInt(totalContactsInput.value);
             const costPerCall = parseInt(costPerCallInput.value);
             const avgSalePrice = parseInt(avgSalePriceInput.value);
             const replyRate = parseFloat(replyRateInput.value) / 100;
@@ -500,17 +506,28 @@
             const callBookingRate = parseInt(callBookingRateInput.value) / 100;
             const closeRate = parseInt(closeRateInput.value) / 100;
 
-            // Calculate funnel
-            const totalContacts = Math.floor(emailVolume / emailsPerContact);
+            // Calculate funnel - starting directly from total contacts
             const totalReplies = Math.floor(totalContacts * replyRate);
             const positiveReplies = Math.floor(totalReplies * positiveReplyRate);
             const callsBooked = Math.floor(positiveReplies * callBookingRate);
             const clientsClosed = Math.floor(callsBooked * closeRate);
             const monthlyRevenue = clientsClosed * avgSalePrice;
 
-            // Calculate financials
-            const techFee = techFees[emailVolume];
-            const totalCost = techFee + (callsBooked * costPerCall);
+            // Calculate financials based on pricing model
+            let totalCost, techFee, costBreakdown;
+            
+            if (pricingModel === 'pay_per_lead') {
+                // Pay per lead: $0 tech fee + cost per booked call
+                techFee = 0;
+                totalCost = callsBooked * costPerCall;
+                costBreakdown = `${formatNumber(callsBooked)} booked calls × ${formatCurrency(costPerCall)}`;
+            } else {
+                // Performance-based: $1,000 tech fee + cost per booked call
+                techFee = TECH_FEE;
+                totalCost = techFee + (callsBooked * costPerCall);
+                costBreakdown = `${formatCurrency(techFee)} tech fee + (${formatNumber(callsBooked)} calls × ${formatCurrency(costPerCall)})`;
+            }
+            
             const cac = clientsClosed > 0 ? totalCost / clientsClosed : 0;
             const roi = totalCost > 0 ? ((monthlyRevenue - totalCost) / totalCost) * 100 : 0;
             const netProfit = monthlyRevenue - totalCost;
@@ -530,7 +547,7 @@
                         <div class="text-3xl font-black text-white font-extrabold">${formatNumber(totalContacts)}</div>
                     </div>
                     <p class="text-xs text-slate-100 italic">
-                        = ${formatNumber(emailVolume)} emails ÷ ${emailsPerContact} emails per contact
+                        Starting point of your outreach campaign
                     </p>
                 </div>
 
@@ -612,7 +629,7 @@
                     <h3 class="text-sm font-semibold text-orange-400 uppercase tracking-wide mb-3">Monthly Investment</h3>
                     <div class="text-4xl font-black text-orange-400 mb-3">${formatCurrency(totalCost)}</div>
                     <p class="text-xs text-slate-100 italic leading-relaxed">
-                        = ${formatCurrency(techFee)} tech fee + (${formatNumber(callsBooked)} calls × ${formatCurrency(costPerCall)})
+                        = ${costBreakdown}
                     </p>
                 </div>
 
@@ -675,8 +692,11 @@
         }
 
         // Event listeners
-        emailVolumeInput.addEventListener('change', calculate);
-        emailsPerContactInput.addEventListener('input', calculate);
+        pricingModelInput.addEventListener('change', function() {
+            updateCostPerCallDefault();
+            calculate();
+        });
+        totalContactsInput.addEventListener('input', calculate);
         costPerCallInput.addEventListener('input', calculate);
         avgSalePriceInput.addEventListener('input', calculate);
         
@@ -703,7 +723,7 @@
         // Initialize
         updateSliderBackground(replyRateInput, 2, 0.5, 5);
         updateSliderBackground(positiveReplyRateInput, 12.5, 5, 25);
-        updateSliderBackground(callBookingRateInput, 25, 10, 50);
+        updateSliderBackground(callBookingRateInput, 30, 10, 50);
         updateSliderBackground(closeRateInput, 25, 10, 50);
         calculate();
     </script>
