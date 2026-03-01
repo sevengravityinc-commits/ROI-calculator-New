@@ -179,8 +179,11 @@
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-turquoise-400 to-turquoise-500 mb-4">
                     Seven Gravity ROI Calculator
                 </h1>
-                <p class="text-lg sm:text-xl text-slate-100 max-w-3xl mx-auto leading-relaxed">
+                <p class="text-lg sm:text-xl text-slate-100 max-w-3xl mx-auto leading-relaxed mb-6">
                     See exactly how partnering with Seven Gravity transforms your cold email outreach into predictable, profitable growth
+                </p>
+                <p class="text-base text-slate-200 max-w-2xl mx-auto leading-relaxed">
+                    Compare our two investment models and see your projected ROI based on industry-standard conversion rates. Adjust the inputs to match your business and discover which plan delivers the best results for you.
                 </p>
             </div>
 
@@ -210,26 +213,26 @@
                                 <button type="button" onclick="showInfoBox('pricingModelInfo')" class="info-icon">ⓘ</button>
                             </label>
                             <select id="pricingModel" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-semibold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200 cursor-pointer hover:border-slate-600">
-                                <option value="performance">Performance-Based (Tech fee + cost per call)</option>
-                                <option value="pay_per_lead">Pay Per Lead (No tech fee, just cost per call)</option>
+                                <option value="plan_a">Plan A - $3k retainer + $100/call</option>
+                                <option value="plan_b">Plan B - $1k tech fee + $350/call</option>
                             </select>
                             <div id="pricingModelInfo" class="info-popup">
-                                <strong>Performance-Based:</strong> Pay a $1,000 monthly tech fee plus your chosen cost per booked call. Best for higher volume campaigns.<br><br>
-                                <strong>Pay Per Lead:</strong> No monthly tech fee. Just pay your chosen cost per booked call (default $500). Simple pricing with no upfront costs.
+                                <strong>Plan A:</strong> $3,000 monthly retainer (includes tech fee) + $100 per booked call. Predictable costs with lower per-meeting rates. Best for higher volume campaigns.<br><br>
+                                <strong>Plan B:</strong> $1,000 monthly tech fee (sunk cost) + $350 per booked call. Lower monthly cost, pay mostly for results. Best for testing or lower volume.
                             </div>
                         </div>
 
-                        <!-- Tech Fee Display -->
+                        <!-- Monthly Fee (Retainer or Tech Fee) -->
                         <div class="space-y-3">
                             <label class="block text-sm font-semibold text-slate-200 flex items-center gap-2">
-                                Monthly Tech Fee
+                                <span id="monthlyFeeLabel">Monthly Retainer</span>
                                 <button type="button" onclick="showInfoBox('techFeeDisplayInfo')" class="info-icon">ⓘ</button>
                             </label>
                             <div class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-bold">
-                                <span id="techFeeDisplay">$1,000</span>
+                                <span id="techFeeDisplay">$3,000</span>
                             </div>
                             <div id="techFeeDisplayInfo" class="info-popup">
-                                The monthly tech fee covers all infrastructure for your cold email campaign including domain setup, email account configuration, warmup sequences, and deliverability optimization. Pay Per Lead model has no tech fee.
+                                <span id="techFeeInfoText">The monthly retainer includes all infrastructure for your cold email campaign (domain setup, email accounts, warmup sequences, deliverability optimization) plus subsidized per-call costs.</span>
                             </div>
                         </div>
 
@@ -251,9 +254,8 @@
                                 Cost Per Booked Call
                                 <button type="button" onclick="showInfoBox('costPerCallInfo')" class="info-icon">ⓘ</button>
                             </label>
-                            <div class="relative">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-200 font-bold text-base">$</span>
-                                <input type="number" id="costPerCall" min="100" max="1000" step="50" value="300" class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl pl-9 pr-4 py-3.5 text-slate-100 text-base font-bold focus:border-turquoise-500 focus:ring-2 focus:ring-turquoise-500/20 transition-all duration-200">
+                            <div class="w-full bg-slate-900/95 border-2 border-slate-600 rounded-xl px-4 py-3.5 text-slate-100 text-base font-bold">
+                                <span id="costPerCallDisplay">$100</span>
                             </div>
                             <div id="costPerCallInfo" class="info-popup">
                                 This is what you pay Seven Gravity for each qualified sales call that gets booked from your campaign. You only pay when someone meeting your ICP criteria agrees to a call.
@@ -433,31 +435,38 @@
 
     <script>
         // Pricing constants
-        const TECH_FEE = 1000;
-        const DEFAULT_COST_PERFORMANCE = 300;
-        const DEFAULT_COST_PAY_PER_LEAD = 500;
+        const PLAN_A_RETAINER = 3000;
+        const PLAN_A_COST_PER_CALL = 100;
+        const PLAN_B_TECH_FEE = 1000;
+        const PLAN_B_COST_PER_CALL = 350;
 
         // Get all inputs
         const pricingModelInput = document.getElementById('pricingModel');
         const totalContactsInput = document.getElementById('totalContacts');
-        const costPerCallInput = document.getElementById('costPerCall');
         const avgSalePriceInput = document.getElementById('avgSalePrice');
         const replyRateInput = document.getElementById('replyRate');
         const positiveReplyRateInput = document.getElementById('positiveReplyRate');
         const callBookingRateInput = document.getElementById('callBookingRate');
         const closeRateInput = document.getElementById('closeRate');
 
-        // Update cost per call default and tech fee display when pricing model changes
-        function updateCostPerCallDefault() {
+        // Update display elements when pricing model changes
+        function updatePricingDisplay() {
             const pricingModel = pricingModelInput.value;
+            const monthlyFeeLabel = document.getElementById('monthlyFeeLabel');
             const techFeeDisplay = document.getElementById('techFeeDisplay');
+            const costPerCallDisplay = document.getElementById('costPerCallDisplay');
+            const techFeeInfoText = document.getElementById('techFeeInfoText');
             
-            if (pricingModel === 'pay_per_lead') {
-                costPerCallInput.value = DEFAULT_COST_PAY_PER_LEAD;
-                techFeeDisplay.textContent = '$0';
+            if (pricingModel === 'plan_a') {
+                monthlyFeeLabel.textContent = 'Monthly Retainer';
+                techFeeDisplay.textContent = '$3,000';
+                costPerCallDisplay.textContent = '$100';
+                techFeeInfoText.textContent = 'The monthly retainer includes all infrastructure for your cold email campaign (domain setup, email accounts, warmup sequences, deliverability optimization) plus subsidized per-call costs.';
             } else {
-                costPerCallInput.value = DEFAULT_COST_PERFORMANCE;
+                monthlyFeeLabel.textContent = 'Monthly Tech Fee';
                 techFeeDisplay.textContent = '$1,000';
+                costPerCallDisplay.textContent = '$350';
+                techFeeInfoText.textContent = 'The monthly tech fee is a sunk cost that covers all campaign infrastructure (domain setup, email accounts, warmup sequences, deliverability optimization). This is separate from your per-call costs.';
             }
         }
 
@@ -517,7 +526,6 @@
             // Get values
             const pricingModel = pricingModelInput.value;
             const totalContacts = parseInt(totalContactsInput.value);
-            const costPerCall = parseInt(costPerCallInput.value);
             const avgSalePrice = parseInt(avgSalePriceInput.value);
             const replyRate = parseFloat(replyRateInput.value) / 100;
             const positiveReplyRate = parseFloat(positiveReplyRateInput.value) / 100;
@@ -532,18 +540,20 @@
             const monthlyRevenue = clientsClosed * avgSalePrice;
 
             // Calculate financials based on pricing model
-            let totalCost, techFee, costBreakdown;
+            let totalCost, monthlyFee, costPerCall, costBreakdown;
             
-            if (pricingModel === 'pay_per_lead') {
-                // Pay per lead: $0 tech fee + cost per booked call
-                techFee = 0;
-                totalCost = callsBooked * costPerCall;
-                costBreakdown = `${formatNumber(callsBooked)} booked calls × ${formatCurrency(costPerCall)}`;
+            if (pricingModel === 'plan_a') {
+                // Plan A: $3,000 retainer + $100 per booked call
+                monthlyFee = PLAN_A_RETAINER;
+                costPerCall = PLAN_A_COST_PER_CALL;
+                totalCost = monthlyFee + (callsBooked * costPerCall);
+                costBreakdown = `${formatCurrency(monthlyFee)} retainer + (${formatNumber(callsBooked)} calls × ${formatCurrency(costPerCall)})`;
             } else {
-                // Performance-based: $1,000 tech fee + cost per booked call
-                techFee = TECH_FEE;
-                totalCost = techFee + (callsBooked * costPerCall);
-                costBreakdown = `${formatCurrency(techFee)} tech fee + (${formatNumber(callsBooked)} calls × ${formatCurrency(costPerCall)})`;
+                // Plan B: $1,000 tech fee + $350 per booked call
+                monthlyFee = PLAN_B_TECH_FEE;
+                costPerCall = PLAN_B_COST_PER_CALL;
+                totalCost = monthlyFee + (callsBooked * costPerCall);
+                costBreakdown = `${formatCurrency(monthlyFee)} tech fee + (${formatNumber(callsBooked)} calls × ${formatCurrency(costPerCall)})`;
             }
             
             const cac = clientsClosed > 0 ? totalCost / clientsClosed : 0;
@@ -711,11 +721,10 @@
 
         // Event listeners
         pricingModelInput.addEventListener('change', function() {
-            updateCostPerCallDefault();
+            updatePricingDisplay();
             calculate();
         });
         totalContactsInput.addEventListener('input', calculate);
-        costPerCallInput.addEventListener('input', calculate);
         avgSalePriceInput.addEventListener('input', calculate);
         
         replyRateInput.addEventListener('input', function() {
